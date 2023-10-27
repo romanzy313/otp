@@ -1,0 +1,61 @@
+{
+  "name": "@romanzy/otp",
+  "description": "A simple and scalable javascript library to perform OTP actions",
+  "private": true,
+  "version": "0.0.0",
+  "exports": {
+    ".": "./dist/index.js",
+    "./helpers": "./dist/helpers.js",
+    "./storage/*": "./dist/storage/*.js"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": "18",
+    "pnpm": "8"
+  },
+  "scripts": {
+    "dev": "vitest",
+    "build": "pnpm build:tsc",
+    "build:tsc": "tsc",
+    "build:vite": "vite build && tsc --declaration --emitDeclarationOnly",
+    "build:watch": "pnpm clean && tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest --coverage",
+    "test:publish": "pnpm prepublishOnly && pnpm pack",
+    "prepublishOnly": "pnpm clean && pnpm prettier && pnpm lint && pnpm test && pnpm build",
+    "clean": "rimraf -rf ./dist && rimraf -rf ./types && rimraf -rf ./*-*.tgz",
+    "format": "pnpm clean && pnpm prettier && pnpm lint",
+    "lint": "eslint . --ext .ts --fix",
+    "lint:dry": "eslint . --ext .ts",
+    "prettier": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "prettier:dry": "prettier --config .prettierrc 'src/**/*.ts'"
+  },
+  "devDependencies": {
+    "@types/node": "^18.17.17",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint": "^8.49.0",
+    "eslint-config-prettier": "^8.10.0",
+    "eslint-plugin-jest": "^26.9.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.8.8",
+    "rimraf": "^3.0.2",
+    "typescript": "5.1.6",
+    "vite": "^4.4.9",
+    "vitest": "^0.34.4"
+  },
+  "license": "MIT",
+  "keywords": [
+    "otp",
+    "auth"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/romanzy313/otp.git"
+  },
+  "author": "Roman Volovoy"
+}

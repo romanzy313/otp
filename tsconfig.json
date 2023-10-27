@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "es2020",
+    "declaration": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "lib": ["esnext", "dom"],
+    "typeRoots": ["node_modules/@types"],
+    "types": ["node"],
+    "baseUrl": "src",
+    "strict": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "types", "src/**/*.spec.ts"]
+}
