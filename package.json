@@ -1,6 +1,6 @@
 {
   "name": "@romanzy/otp",
-  "description": "A simple and scalable javascript library to perform OTP actions",
+  "description": "A simple and scalable way to handle various OTP scenarios",
   "version": "0.5.7",
   "exports": {
     ".": "./dist/index.js",
