@@ -42,7 +42,9 @@ bun install @romanzy/otp
 
 ### User authentication via SMS/email codes
 
-TODO, undocumented example with [Elysiajs + htmx](examples/elysiajs-htmx)
+Example with [Elysiajs + htmx](examples/elysiajs-htmx)
+
+TODO add diagrams and description of how it works
 
 ### Verify ownership of phone and/or email before registration
 
@@ -72,11 +74,11 @@ I am looking for feedback and potential vunerabilities in this method of otp val
 
 ## Security
 
-Security comes from hashing. Since the token is derived from a random ID, account name, issue time, and attempts remaining count, the current token value cannot be guessed by a 3rd party. Every time the token is used, it is invalidated (except when it is solved; more on this later)
+Security comes from hashing. Since the token is derived from a random ID, account name, issue time, and attempts remaining count, the current token value cannot be guessed by a 3rd party. Every time the token is used, it is invalidated (except when explicitly told to `allowReuseOfSolvedToken`; more on this later)
 
 The tokens are protected from modification by indexing them in the cache by hashed value (with sha256 as default); the server simply can not find a maliciously modified token in the hash. Since every token is given a small number of attempts, it is unlikely for the 1st party to go around it without entering the correct solution.
 
-The `customData` field can store arbitrary JSON-encodable information inside the token, allowing the developer to ensure that solved tokens are not used for other purposes. The `account` field can be used to make sure that correct phone numbers/emails are verified for registration.
+The `customData` field can store arbitrary JSON-encodable information inside the token, allowing the developer to ensure that solved tokens are not used for other purposes.
 
 ## Important notes
 
@@ -84,15 +86,14 @@ This library depends on `crypto` module. Node, Deno, and Bun runtimes should sup
 
 Always implement some sort of rate limit by IP or account to prevent abuse. Sending text messages costs money, and email spam is terrible for domain-name reputation. Rate-limit both solving and issuing of tokens before using this library.
 
-Validate and normalize the account name before issuing the tokens: trim whitespaces, convert emails to lowercase, remove "+" in phone numbers, use Google's libphonenumber, etc.
+Validate and normalize the `account` field before issuing the tokens: trim whitespaces, convert emails to lowercase, remove "+" in phone numbers, use Google's libphonenumber, etc.
 
-Always validate token data when otp is solved correctly. Grant login/registration to `user@example.com` only if the token has an account of `user@example.com`. If not careful, an attacker with email `haxx@example.com` could login into account of `admin@example.com` by sustituting solved token before hitting login endpoint.
+Always validate token data when OTP is solved correctly. Grant login/registration to `user@example.com` only if the token has an account of `user@example.com`. If not careful, an attacker with the email `haxx@example.com` could log in to the account of `admin@example.com` by substituting the solved token before hitting the login endpoint.
 
 Use at least 6-digit OTP codes, allow no more than 3 attempts, and expire tokens after no more than 5 minutes.
 
 ## TODOS
 
-- [ ] Make htmx example work
 - [ ] Better readme, maybe workflow diagram, explain solve and invalidation
 - [ ] More helper functions
 - [ ] Client-side react example
