@@ -1,4 +1,4 @@
-export type ServiceConfig<SendArgs> = {
+export type OtpConfig<SendArgs> = {
   /**
    * Storage where the solutions are stored.
    * To write your own implement OtpStorage interface

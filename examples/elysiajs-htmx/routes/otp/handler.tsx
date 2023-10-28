@@ -1,7 +1,7 @@
 import Elysia, { t } from 'elysia';
+import { OtpError } from '@romanzy/otp';
 import { OtpForm, OtpPage } from './template';
 import { RootLayout } from '../../templates/RootLayout';
-import { OtpError } from '@romanzy/otp';
 import { otpService } from '../../otpService';
 
 export const otpHandler = new Elysia({
@@ -16,7 +16,6 @@ export const otpHandler = new Elysia({
             Fatal error detected. Type: {error.message}, cause: {error.cause}
           </div>
         );
-
       default:
         break;
     }

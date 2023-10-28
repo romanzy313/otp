@@ -6,7 +6,7 @@ import type {
   OtpStorage,
   SendOtpFn,
   OtpResult,
-  ServiceConfig,
+  OtpConfig,
 } from './types';
 import { OtpError } from './OtpError';
 import { decodeToken, computeMeta, safeCompare, encodeToken } from './utils';
@@ -36,7 +36,7 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
     ttlFactor = 4,
     hashingAlgorithm: hashAlgo = 'sha256',
     idEntropy = 32,
-  }: ServiceConfig<SendArgs>) {
+  }: OtpConfig<SendArgs>) {
     if (ttlFactor < 1) throw new Error('ttl factor cannot be less then 1');
 
     this.storage = storage;
