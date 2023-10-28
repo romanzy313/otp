@@ -11,7 +11,7 @@ export type {
   OtpBadRequestCause,
   OtpInternalErrorCause,
 } from './types';
-export type { OtpError } from './OtpError';
+export { OtpError } from './OtpError';
 
 export {
   browserDecodeToken,

@@ -1,0 +1,13 @@
+/* some nice styles go here */
+/* TODO Nice */
+
+.otp__form {
+  background-color: aliceblue;
+}
+
+.otp__toggle:not(.disable) .otp__toggle__disabled {
+  display: none;
+}
+.otp__toggle.disable .otp__toggle__enabled {
+  display: none;
+}

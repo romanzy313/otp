@@ -1,0 +1,19 @@
+{
+  "name": "elysia-htmx",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch main.ts"
+  },
+  "devDependencies": {
+    "@types/web": "^0.0.119",
+    "bun-types": "^1.0.1",
+    "typescript": "5.1.6"
+  },
+  "dependencies": {
+    "@elysiajs/html": "^0.7.3",
+    "@elysiajs/static": "^0.7.1",
+    "@romanzy/otp": "workspace:^",
+    "elysia": "^0.7.21",
+    "htmx.org": "^1.9.6"
+  }
+}
