@@ -1,7 +1,7 @@
 {
   "name": "@romanzy/otp",
-  "description": "A simple and scalable way to handle various OTP scenarios",
-  "version": "0.5.7",
+  "description": "A simple and powerful way to handle various OTP scenarios",
+  "version": "0.5.8",
   "exports": {
     ".": "./dist/index.js",
     "./helpers": "./dist/helpers.js",

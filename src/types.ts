@@ -91,7 +91,7 @@ export type OtpConfig<SendArgs> = {
 };
 
 export interface OtpStorage {
-  set(key: string, secret: string, ttl: number): Promise<void>;
+  set(key: string, value: string, ttl: number): Promise<void>;
   get(key: string): Promise<string | null>;
   invalidate(key: string): Promise<void>;
 }

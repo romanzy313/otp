@@ -94,19 +94,20 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
   }
 
   /**
-   * Check the solution of the token
+   * Check the solution of the token. Default behavior is to invalidate the token when it is solved correctly.
    *
-   * Last option allowReuseOfSolvedToken allows to mark the token as solved,
-   * so that it can be checked later with getTokenInformation.
+   * Last option allowReuseOfSolvedToken allows to mark the token as solved instead of invalidating it,
+   * so that it can be checked inside another API route with getTokenInformation function.
    * If this option is used, the developer is responsible to invalidating the token after use.
    *
    * Usefull when solved token will be sent to another endpoint.
    * It is the only way to keep logic not pretaining to otp solving outside of otp endpoints,
-   * Otherwise everything goes through otp handlers and it gets messy very quickly
+   * Otherwise everything goes through otp handlers and it gets messy very quickly.
+   * Simply send solved token to an API endpoint, and
    *
-   * allowReuseOfSolvedToken should be set to true if validation of multiple tokens is required
+   * allowReuseOfSolvedToken should be set to true if validation of multiple tokens is required.
    * For example, when phone and email needs to be validated before registration.
-   * Phone otp could be solved first, while email is pending or is done incorrectly
+   * While multiple otps are solved, we want to keep them existing in the cache before proceeding to registration
    *
    * @param token
    * @param solution
@@ -307,6 +308,7 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
   async invalidateToken(token: string): Promise<void> {
     try {
       const hash = this.hash(token);
+
       await this.storage.invalidate(this.storagePrefix + hash);
     } catch {
       throw new OtpError('INTERNAL_ERROR', 'STORAGE_FAILURE');

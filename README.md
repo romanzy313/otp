@@ -34,15 +34,169 @@ bun
 bun install @romanzy/otp
 ```
 
-## Examples:
+## How to use
+
+Create a storage adapter, it must implement `OtpStorage` interface.
+
+```ts
+export interface OtpStorage {
+  set(key: string, value: string, ttl: number): Promise<void>;
+  get(key: string): Promise<string | null>;
+  invalidate(key: string): Promise<void>;
+}
+```
+
+Create an instance of `OtpService`.
+
+```ts
+import { OtpService, OtpError } from '@romanzy/otp';
+
+type SendArgs = { locale: string };
+
+const otpService = new OtpService({
+  storage: storageAdapter, // write your own storage adapter
+  maxAttempts: 3,
+  timeToResend: 60 * 1000,
+  timeToSolve: 5 * 60 * 1000,
+  generateSolution: () => {
+    return '1234';
+  },
+  sendOtp: async (account, solution, args: SendArgs) => {
+    // write code to send the code to the user
+  },
+});
+```
+
+Issue a token, route `/otp/issue`.
+
+```ts
+try {
+  const { token, data, error, meta } = await otpService.issue(
+    body.phone,
+    undefined, // custom data to attach to otp
+    { locale: 'en' } // args passed to sendOtp
+  );
+
+  // redirect to correct page
+  set.headers['HX-Location'] = `/otp/${token}/`;
+} catch (error: unknown) {
+  // Typed error is returned
+  if (error instanceof OtpError) {
+    if (error.message == 'BAD_REQUEST') set.status = 400;
+    else if (error.message == 'INTERNAL_ERROR') set.status = 500;
+  }
+}
+```
+
+Please note that all methods can throw `OtpError` as in issue token example. These functions throw when a malicious request made by the client or when experiencing problems with the storage. In following examples try-catch error handling is ommited for brevity.
+
+Get token information, route `/otp/:token/`.
+
+```ts
+try {
+  const { token, data, error, meta } = await otpService.getTokenInformation(
+    params.token
+  );
+
+  return (
+    <RootLayout title="Confirm OTP page">
+      <OtpPage token={token} data={data} meta={meta} error={error}></OtpPage>
+    </RootLayout>
+  );
+} catch (error: unknown) {
+  if (error instanceof OtpError) {
+    if (error.message == 'BAD_REQUEST') set.status = 400;
+    else if (error.message == 'INTERNAL_ERROR') set.status = 500;
+
+    return (
+      <RootLayout title="Confirm OTP page">
+        {error.message == 'INTERNAL_ERROR' && (
+          <div>Internal server error. Cause: {error.cause}</div>
+        )}
+        {error.message == 'BAD_REQUEST' && (
+          <div>Bad request. Cause: {error.cause}</div>
+        )}
+      </RootLayout>
+    );
+  }
+}
+```
+
+Check solution, route `/otp/:token/check/`.
+
+```ts
+const { token, data, meta, error } = await otpService.check(
+  params.token, // token from the client
+  body.solution // solution from the clent
+);
+
+if (!meta.isSolved) {
+  // set new token on the client
+  set.headers['HX-Replace-Url'] = `/otp/${token}/`;
+  // re-render otp form with error message
+  return (
+    <OtpForm token={token} data={data} meta={meta} error={error}></OtpForm>
+  );
+}
+
+// procede to business logic
+const { account, customData } = data;
+```
+
+Resend a token, route `/otp/:token/resend/`
+
+```ts
+const { token, data, meta, error } = await otpService.resend(params.token, {
+  locale: 'en',
+});
+
+set.headers['HX-Replace-Url'] = `/otp/${token}/`;
+return <OtpForm token={token} data={data} meta={meta} error={error}></OtpForm>;
+```
+
+All of the functions above return `OtpResult` type.
+
+```ts
+export type OtpResult<Data = unknown> = {
+  token: string;
+  data: {
+    id: string;
+    account: string;
+    expiresAt: number;
+    resendAt: number;
+    attemptsRemaining: number;
+    customData: Data;
+  };
+  meta: {
+    isSolved: boolean;
+    canResend: boolean;
+    canAttempt: boolean;
+    isExpired: boolean;
+  };
+  error: 'NO_ATTEMPTS_REMAINING' | 'EXPIRED' | 'BAD_SOLUTION' | null;
+};
+```
+
+## Helper functions
+
+```ts
+import {
+  numericalSolutionGenerator,
+  browserDecodeToken,
+} from '@romanzy/otp/helpers';
+
+// 6-digit code generator
+const generateOtp = numericalSolutionGenerator(6);
+
+// decode token value into data of OtpResult in the browser
+const data = browserDecodeToken('...');
+```
+
+## Complete examples:
 
 - [Elysiajs + htmx](examples/elysiajs-htmx)
 
-## Use cases and examples
-
 ### User authentication via SMS/email codes
-
-Example with [Elysiajs + htmx](examples/elysiajs-htmx)
 
 TODO add diagrams and description of how it works
 
@@ -80,15 +234,15 @@ The tokens are protected from modification by indexing them in the cache by hash
 
 The `customData` field can store arbitrary JSON-encodable information inside the token, allowing the developer to ensure that solved tokens are not used for other purposes.
 
-## Important notes
+This library depends on `crypto` module. All cryptographic operations are performed using this module
 
-This library depends on `crypto` module. Node, Deno, and Bun runtimes should support needed functionality out of the box.
+## Important notes
 
 Always implement some sort of rate limit by IP or account to prevent abuse. Sending text messages costs money, and email spam is terrible for domain-name reputation. Rate-limit both solving and issuing of tokens before using this library.
 
 Validate and normalize the `account` field before issuing the tokens: trim whitespaces, convert emails to lowercase, remove "+" in phone numbers, use Google's libphonenumber, etc.
 
-Always validate token data when OTP is solved correctly. Grant login/registration to `user@example.com` only if the token has an account of `user@example.com`. If not careful, an attacker with the email `haxx@example.com` could log in to the account of `admin@example.com` by substituting the solved token before hitting the login endpoint.
+Always validate token data when OTP is solved correctly. Grant login/registration to `user@example.com` only if the token has an account of `user@example.com`. If not careful, an attacker with the email `haxx@example.com` could log in to the account of `admin@example.com` by substituting the solved token before hitting the login API endpoint.
 
 Use at least 6-digit OTP codes, allow no more than 3 attempts, and expire tokens after no more than 5 minutes.
 
@@ -97,4 +251,5 @@ Use at least 6-digit OTP codes, allow no more than 3 attempts, and expire tokens
 - [ ] Better readme, maybe workflow diagram, explain solve and invalidation
 - [ ] More helper functions
 - [ ] Client-side react example
-- [ ] More storage connectors out of the box, maybe an unstorage adapter?
+- [ ] TsDoc autodocumentation
+- [ ] More storage connectors out of the box, most likely an (unstorage)[https://github.com/unjs/unstorage] adapter?

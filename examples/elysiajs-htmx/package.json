@@ -2,7 +2,7 @@
   "name": "elysia-htmx",
   "type": "module",
   "scripts": {
-    "dev": "bun run --watch main.ts"
+    "dev": "bun run --watch server.tsx"
   },
   "devDependencies": {
     "@types/web": "^0.0.119",

@@ -1,5 +1,8 @@
 import { OtpService } from '@romanzy/otp';
 import { MemoryStorage } from '@romanzy/otp/storage/MemoryStorage';
+import { numericalSolutionGenerator } from '@romanzy/otp/helpers';
+
+numericalSolutionGenerator(6);
 
 export const otpService = new OtpService({
   storage: new MemoryStorage(),

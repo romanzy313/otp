@@ -1,10 +1,11 @@
 import type { OtpResult } from '@romanzy/otp';
 
-export const OtpForm: Component<OtpResult> = ({ token, data, meta, error }) => {
+export const OtpForm: Component<OtpResult> = ({ data, meta, error }) => {
   const inputEnabled = !meta.isExpired && meta.canAttempt;
   return (
     <form id={data.id} class="otp__form" hx-post={`solve/`} hx-swap="outerHTML">
-      <small>Token {token}</small>
+      {/* <small>Token {token}</small> */}
+      <small>Example solution is always 1234</small>
       {error && <div style="color: red; padding: 1rem">{error}</div>}
 
       <h3>Please complete otp for {data.account}</h3>

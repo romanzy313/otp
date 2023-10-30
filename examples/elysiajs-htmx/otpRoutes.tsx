@@ -1,8 +1,8 @@
 import Elysia, { t } from 'elysia';
 import { OtpError } from '@romanzy/otp';
-import { OtpForm, OtpPage } from './template';
-import { RootLayout } from '../../templates/RootLayout';
-import { otpService } from '../../otpService';
+import { OtpForm, OtpPage } from './templates';
+import { RootLayout } from './templates/RootLayout';
+import { otpService } from './otpService';
 
 export const otpHandler = new Elysia({
   prefix: '/otp',
@@ -23,19 +23,19 @@ export const otpHandler = new Elysia({
   .get('/', async ({ cookie }) => {
     return (
       <RootLayout title="Confirm OTP page">
-        <h1>Auth status</h1>
-        <div>{cookie.auth.value || 'not logged in'}</div>
+        <div>Auth status: {cookie.auth.value || 'not logged in'}</div>
 
         <h3>Start otp</h3>
-        <form hx-post="start/" hx-boost>
+        <form hx-post="issue/" hx-boost>
           <input name="account" placeholder="enter account"></input>
           <button type="submit">Start</button>
         </form>
       </RootLayout>
     );
   })
+
   .post(
-    '/start/',
+    '/issue/',
     async ({ body, set }) => {
       // validate its an email or phone
       const account = body.account.toLowerCase();
@@ -55,18 +55,14 @@ export const otpHandler = new Elysia({
     '/:token/',
     async ({ params, set }) => {
       try {
-        const {
-          token,
-          data: value,
-          error,
-          meta,
-        } = await otpService.getTokenInformation(params.token);
+        const { token, data, error, meta } =
+          await otpService.getTokenInformation(params.token);
 
         return (
           <RootLayout title="Confirm OTP page">
             <OtpPage
               token={token}
-              data={value}
+              data={data}
               meta={meta}
               error={error}
             ></OtpPage>
@@ -99,12 +95,10 @@ export const otpHandler = new Elysia({
   .post(
     '/:token/solve/',
     async ({ body, params, set, cookie }) => {
-      const {
-        token,
-        data: value,
-        meta,
-        error,
-      } = await otpService.check(params.token, body.solution);
+      const { token, data, meta, error } = await otpService.check(
+        params.token,
+        body.solution
+      );
 
       if (!meta.isSolved) {
         // dont forget to change url for next request
@@ -112,18 +106,15 @@ export const otpHandler = new Elysia({
         return (
           <OtpForm
             token={token}
-            data={value}
+            data={data}
             meta={meta}
             error={error}
           ></OtpForm>
         );
       }
 
-      // invalidate right away
-      await otpService.invalidateToken(token);
-
       cookie.auth.set({
-        value: value.account,
+        value: data.account,
         path: '/',
       });
 
@@ -146,18 +137,16 @@ export const otpHandler = new Elysia({
     async ({ params, set }) => {
       // need to parse out the username from the token
 
-      const {
-        token,
-        data: value,
-        meta,
-        error,
-      } = await otpService.resend(params.token, {
-        locale: 'en',
-      });
+      const { token, data, meta, error } = await otpService.resend(
+        params.token,
+        {
+          locale: 'en',
+        }
+      );
 
       set.headers['HX-Replace-Url'] = `/otp/${token}/`;
       return (
-        <OtpForm token={token} data={value} meta={meta} error={error}></OtpForm>
+        <OtpForm token={token} data={data} meta={meta} error={error}></OtpForm>
       );
     },
     {
