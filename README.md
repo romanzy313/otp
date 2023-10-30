@@ -196,9 +196,15 @@ const { account, expiresAt, resendAt, attemptsRemaining } =
   browserDecodeToken('...');
 ```
 
-## Complete examples:
+## Typedoc API overview
+
+Available [here](https://romanzy313.github.io/otp/)
+
+## Examples:
 
 - [Elysiajs + htmx](examples/elysiajs-htmx)
+
+## Example workflows
 
 ### User authentication via SMS/email codes
 

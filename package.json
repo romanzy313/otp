@@ -1,7 +1,7 @@
 {
   "name": "@romanzy/otp",
   "description": "Simple and powerful way to implement your own OTP workflows",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "exports": {
     ".": "./dist/index.js",
     "./helpers": "./dist/helpers.js",
