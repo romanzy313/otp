@@ -34,10 +34,21 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
     timeToResend = 1 * 60 * 1000,
     gracePeriod = 5000,
     ttlFactor = 4,
-    hashingAlgorithm: hashAlgo = 'sha256',
+    hashingAlgorithm = 'sha256',
     idEntropy = 32,
   }: OtpConfig<SendArgs>) {
     if (ttlFactor < 1) throw new Error('ttl factor cannot be less then 1');
+
+    if (hashingAlgorithm) {
+      const listOfSupportedHashes = crypto.getHashes();
+      if (!listOfSupportedHashes.includes(hashingAlgorithm)) {
+        throw new Error(
+          `Hashing algorithm '${hashingAlgorithm}' is not supported by the crypto module. Supported hashing functions: ${listOfSupportedHashes.join(
+            ', '
+          )}`
+        );
+      }
+    }
 
     this.storage = storage;
     this.storagePrefix = storagePrefix;
@@ -53,9 +64,10 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
 
     // TODO make this async? to not block the main thread?
     this.hash =
-      hashAlgo === null
+      hashingAlgorithm === null
         ? (v) => v
-        : (value) => crypto.createHash(hashAlgo).update(value).digest('hex');
+        : (value) =>
+            crypto.createHash(hashingAlgorithm).update(value).digest('hex');
   }
 
   private calculateResendableAt(expiresAt: number) {

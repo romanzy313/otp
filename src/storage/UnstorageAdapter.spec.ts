@@ -15,7 +15,6 @@ beforeEach(() => {
     storage: new Storage(driver),
     generateSolution: () => '1234',
     storagePrefix: 'otp:',
-    hashingAlgorithm: 'sha256',
   });
 });
 
