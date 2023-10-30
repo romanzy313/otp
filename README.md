@@ -1,6 +1,6 @@
 # @romanzy/otp
 
-A simple and scalable javascript library to perform OTP code authorization. Works in Node, Deno, and Bun runtimes.
+A simple and scalable javascript library to perform OTP operations. Works in Node, Deno, and Bun runtimes.
 
 ## Benefits:
 
@@ -11,10 +11,10 @@ A simple and scalable javascript library to perform OTP code authorization. Work
 ## Installation
 
 ```bash
-npm install @romanzy/otp unstorage
-yarn add @romanzy/otp unstorage
-pnpm install @romanzy/otp unstorage
-bun install @romanzy/otp unstorage
+npm install @romanzy/otp
+yarn add @romanzy/otp
+pnpm install @romanzy/otp
+bun install @romanzy/otp
 ```
 
 ## How to use

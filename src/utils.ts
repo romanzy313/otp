@@ -1,6 +1,9 @@
 import { OtpError } from './OtpError';
 import { OtpData, OtpMeta } from './types';
 
+/**
+ * @internal
+ */
 export function encodeToken<Data = unknown>(data: OtpData<Data>) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const values: any[] = [
@@ -15,6 +18,9 @@ export function encodeToken<Data = unknown>(data: OtpData<Data>) {
   return Buffer.from(JSON.stringify(values)).toString('base64url');
 }
 
+/**
+ * @internal
+ */
 export function decodeToken<Data = unknown>(token: string): OtpData<Data> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let parts: any[] = [];
@@ -49,6 +55,9 @@ export function decodeToken<Data = unknown>(token: string): OtpData<Data> {
   };
 }
 
+/**
+ * @internal
+ */
 export function computeMeta(data: OtpData, isSolved: boolean): OtpMeta {
   const now = Date.now();
 
@@ -60,13 +69,19 @@ export function computeMeta(data: OtpData, isSolved: boolean): OtpMeta {
   };
 }
 
-// TODO make it safe
+// TODO make safe, but may not be needed
+/**
+ * @internal
+ */
 export function safeCompare(actual: string, provided: string) {
   return actual === provided;
 }
 
 // not used really, but could wrap all methods in this
 // for an alternative way, without try/catch
+/**
+ * @internal
+ */
 export async function asyncResultOrNull<R>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   throwable: (...args: any[]) => Promise<R>

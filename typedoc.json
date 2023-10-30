@@ -1,0 +1,13 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "@romanzy/otp",
+  "out": "docs",
+  "entryPoints": ["./src/**/*.ts"],
+  "entryPointStrategy": "resolve",
+  // "entryPoints": ["."],
+  // "entryPointStrategy": "packages",
+  "includeVersion": true
+
+  // Potentially useful for debugging
+  // "logLevel": "Verbose"
+}

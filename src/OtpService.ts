@@ -277,40 +277,6 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
     return this.issue<Data>(data.data.account, sendArgs, data.data.customData);
   }
 
-  // TODO this needs more work
-  /**
-   * This is work in progress
-   *
-   * Should this function invalidate tokens on when all are solved?
-   * Maybe provide an option: "invalidateWhenAllSolved?: boolean"
-   * Or returning invalidateAll function is okay?
-   *
-   * Returning invalidateAll function is really out of place code-style wise
-   *
-   * maybe multi-token functionality needs to be implemented in a class that
-   * extends this one. It can also make sure that data is stored outside the tokens
-   * and that each token is associated with the same data
-   *
-   * @throws {OtpError}
-   */
-  async WIP_checkIfAllTokensAreSolved(tokens: string[]) {
-    const results = await Promise.all(
-      tokens.map((token) => this.getTokenInformation(token))
-    );
-
-    const allSolved = results.every((result) => result.meta.isSolved);
-
-    const invalidateAll = async () => {
-      await Promise.all(tokens.map((token) => this.invalidateToken(token)));
-    };
-
-    return {
-      allSolved,
-      results,
-      invalidateAll,
-    };
-  }
-
   /**
    * Invalidate a token. Important to call this function when
    * allowReuseOfSolvedToken is enabled when solution is checked
@@ -360,3 +326,37 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
     return res;
   }
 }
+
+// // TODO this needs more work
+// /**
+//  * This is work in progress
+//  *
+//  * Should this function invalidate tokens on when all are solved?
+//  * Maybe provide an option: "invalidateWhenAllSolved?: boolean"
+//  * Or returning invalidateAll function is okay?
+//  *
+//  * Returning invalidateAll function is really out of place code-style wise
+//  *
+//  * maybe multi-token functionality needs to be implemented in a class that
+//  * extends this one. It can also make sure that data is stored outside the tokens
+//  * and that each token is associated with the same data
+//  *
+//  * @throws {OtpError}
+//  */
+// async WIP_checkIfAllTokensAreSolved(tokens: string[]) {
+//   const results = await Promise.all(
+//     tokens.map((token) => this.getTokenInformation(token))
+//   );
+
+//   const allSolved = results.every((result) => result.meta.isSolved);
+
+//   const invalidateAll = async () => {
+//     await Promise.all(tokens.map((token) => this.invalidateToken(token)));
+//   };
+
+//   return {
+//     allSolved,
+//     results,
+//     invalidateAll,
+//   };
+// }
