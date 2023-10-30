@@ -10,33 +10,16 @@ A simple and scalable javascript library to perform OTP code authorization. Work
 
 ## Installation
 
-npm
-
 ```bash
 npm install @romanzy/otp
-```
-
-yarn
-
-```bash
 yarn add @romanzy/otp
-```
-
-pnpm
-
-```bash
 pnpm install @romanzy/otp
-```
-
-bun
-
-```bash
 bun install @romanzy/otp
 ```
 
 ## How to use
 
-Create a storage adapter, it must implement `OtpStorage` interface.
+Create a storage adapter, it must implement `OtpStorage` interface
 
 ```ts
 export interface OtpStorage {
@@ -46,15 +29,18 @@ export interface OtpStorage {
 }
 ```
 
-Create an instance of `OtpService`.
+Examples will use `MemoryStorage` adapter, which a simple implementation with js `Map()`
+
+Create an instance of `OtpService` in its own module for easy referencing
 
 ```ts
 import { OtpService, OtpError } from '@romanzy/otp';
+import { MemoryStorage } from '@romanzy/otp/storage/MemoryStorage';
 
 type SendArgs = { locale: string };
 
-const otpService = new OtpService({
-  storage: storageAdapter, // write your own storage adapter
+export const otpService = new OtpService({
+  storage: new MemoryStorage(), // write your own storage adapter
   maxAttempts: 3,
   timeToResend: 60 * 1000,
   timeToSolve: 5 * 60 * 1000,
@@ -62,12 +48,12 @@ const otpService = new OtpService({
     return '1234';
   },
   sendOtp: async (account, solution, args: SendArgs) => {
-    // write code to send the code to the user
+    // write code to send otp to the user
   },
 });
 ```
 
-Issue a token, route `/otp/issue`.
+Issue a token, route `POST /otp/issue`
 
 ```ts
 try {
@@ -90,7 +76,7 @@ try {
 
 Please note that all methods can throw `OtpError` as in issue token example. These functions throw when a malicious request made by the client or when experiencing problems with the storage. In following examples try-catch error handling is ommited for brevity.
 
-Get token information, route `/otp/:token/`.
+Get token information `GET /otp/:token/`
 
 ```ts
 try {
@@ -122,7 +108,7 @@ try {
 }
 ```
 
-Check solution, route `/otp/:token/check/`.
+Check solution, route `POST /otp/:token/check/`
 
 ```ts
 const { token, data, meta, error } = await otpService.check(
@@ -143,7 +129,7 @@ if (!meta.isSolved) {
 const { account, customData } = data;
 ```
 
-Resend a token, route `/otp/:token/resend/`
+Resend a token, route `POST /otp/:token/resend/`
 
 ```ts
 const { token, data, meta, error } = await otpService.resend(params.token, {
@@ -189,7 +175,8 @@ import {
 const generateOtp = numericalSolutionGenerator(6);
 
 // decode token value into data of OtpResult in the browser
-const data = browserDecodeToken('...');
+const { account, expiresAt, resendAt, attemptsRemaining } =
+  browserDecodeToken('...');
 ```
 
 ## Complete examples:
@@ -234,6 +221,8 @@ The tokens are protected from modification by indexing them in the cache by hash
 
 The `customData` field can store arbitrary JSON-encodable information inside the token, allowing the developer to ensure that solved tokens are not used for other purposes.
 
+When issuing a token with `allowReuseOfSolvedToken` enabled, solutions for solved tokens are overriden to some constant value, default is `S`. Next time `getTokenInformation` is called, it will be aware that the token is solved.
+
 This library depends on `crypto` module. All cryptographic operations are performed using this module
 
 ## Important notes
@@ -252,4 +241,4 @@ Use at least 6-digit OTP codes, allow no more than 3 attempts, and expire tokens
 - [ ] More helper functions
 - [ ] Client-side react example
 - [ ] TsDoc autodocumentation
-- [ ] More storage connectors out of the box, most likely an (unstorage)[https://github.com/unjs/unstorage] adapter?
+- [ ] More storage connectors out of the box, most likely an [unstorage](https://github.com/unjs/unstorage) adapter
