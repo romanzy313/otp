@@ -1,7 +1,7 @@
 {
   "name": "@romanzy/otp",
   "description": "A simple and powerful way to handle various OTP scenarios",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "exports": {
     ".": "./dist/index.js",
     "./helpers": "./dist/helpers.js",
@@ -50,7 +50,15 @@
   "license": "MIT",
   "keywords": [
     "otp",
-    "auth"
+    "one-time-password",
+    "auth",
+    "authenitcation",
+    "authorization",
+    "passwordless",
+    "magic-link",
+    "sms-auth",
+    "phone-auth",
+    "email-auth"
   ],
   "repository": {
     "type": "git",
