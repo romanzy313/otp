@@ -4,50 +4,50 @@ A simple and scalable javascript library to perform OTP code authorization. Work
 
 ## Benefits:
 
-- Only a single caching server is required
+- Requires a single key-value pair storage server
 - Almost stateless operation, easy client/server logic
 - Very easy to implement in server-side rendered applications
 
 ## Installation
 
 ```bash
-npm install @romanzy/otp
-yarn add @romanzy/otp
-pnpm install @romanzy/otp
-bun install @romanzy/otp
+npm install @romanzy/otp unstorage
+yarn add @romanzy/otp unstorage
+pnpm install @romanzy/otp unstorage
+bun install @romanzy/otp unstorage
 ```
 
 ## How to use
 
-Create a storage adapter, it must implement `OtpStorage` interface
+To create a storage adapter, implement `OtpStorage` interface
 
 ```ts
 export interface OtpStorage {
-  set(key: string, value: string, ttl: number): Promise<void>;
+  set(key: string, value: string, ttl: number /* in seconds! */): Promise<void>;
   get(key: string): Promise<string | null>;
   invalidate(key: string): Promise<void>;
 }
 ```
 
-Examples will use `MemoryStorage` adapter, which a simple implementation with js `Map()`
+Or use `UnstorageAdapter` to support a lot of different backend key-value data stores. The full list can be found at the official documentation [here](https://unstorage.unjs.io/)
+
+Examples will use `MemoryStorage` implementation, which a simple wrapper around js `Map()`
 
 Create an instance of `OtpService` in its own module for easy referencing
 
 ```ts
 import { OtpService, OtpError } from '@romanzy/otp';
-import { MemoryStorage } from '@romanzy/otp/storage/MemoryStorage';
-
+import Storage from '@romanzy/otp/storage/MemoryStorage';
 type SendArgs = { locale: string };
 
 export const otpService = new OtpService({
-  storage: new MemoryStorage(), // write your own storage adapter
+  storage: new Storage(),
   maxAttempts: 3,
-  timeToResend: 60 * 1000,
-  timeToSolve: 5 * 60 * 1000,
-  generateSolution: () => {
-    return '1234';
-  },
+  timeToResend: 60 * 1000, // units in milliseconds
+  timeToSolve: 5 * 60 * 1000, // units in milliseconds
+  generateSolution: () => '1234',
   sendOtp: async (account, solution, args: SendArgs) => {
+    console.log('sent otp to', account, 'with solution', solution);
     // write code to send otp to the user
   },
 });
@@ -74,9 +74,9 @@ try {
 }
 ```
 
-Please note that all methods can throw `OtpError` as in issue token example. These functions throw when a malicious request made by the client or when experiencing problems with the storage. In following examples try-catch error handling is ommited for brevity.
+Please note that **all** methods of OtpService can throw `OtpError`. These functions throw when a malicious request made by the client or when experiencing problems with storage. In the following examples try-catch error handling is omitted for brevity.
 
-Get token information `GET /otp/:token/`
+Get token information `GET /otp/:token`
 
 ```ts
 try {
@@ -108,7 +108,7 @@ try {
 }
 ```
 
-Check solution, route `POST /otp/:token/check/`
+Check solution, route `POST /otp/:token/check`
 
 ```ts
 const { token, data, meta, error } = await otpService.check(
@@ -129,7 +129,7 @@ if (!meta.isSolved) {
 const { account, customData } = data;
 ```
 
-Resend a token, route `POST /otp/:token/resend/`
+Resend a token, route `POST /otp/:token/resend`
 
 ```ts
 const { token, data, meta, error } = await otpService.resend(params.token, {
@@ -163,6 +163,23 @@ export type OtpResult<Data = unknown> = {
 };
 ```
 
+## How to use UnstorageAdapter
+
+```ts
+import { OtpService } from '@romanzy/otp';
+import Storage from '@romanzy/otp/storage/UnstorageAdapter';
+import redisDriver from 'unstorage/drivers/redis';
+
+const otpService = new OtpService({
+  storage: new Storage(
+    redisDriver({
+      // driver options
+    })
+  ),
+  generateSolution: () => '1234',
+});
+```
+
 ## Helper functions
 
 ```ts
@@ -172,7 +189,7 @@ import {
 } from '@romanzy/otp/helpers';
 
 // 6-digit code generator
-const generateOtp = numericalSolutionGenerator(6);
+const generateSolution = numericalSolutionGenerator(6);
 
 // decode token value into data of OtpResult in the browser
 const { account, expiresAt, resendAt, attemptsRemaining } =

@@ -63,6 +63,8 @@ export type OtpConfig<SendArgs> = {
    * Higher values are recommended so that expired tokens do not dissapear
    * and user see proper EXPIRED error, rather then BAD_REQUEST
    *
+   * Note: not all storage implementations support ttl, consult the documentation
+   *
    * Essentually sets ttl of storage.set function as timeToSolve * ttlFactor
    *
    * @default 4
@@ -91,7 +93,7 @@ export type OtpConfig<SendArgs> = {
 };
 
 export interface OtpStorage {
-  set(key: string, value: string, ttl: number): Promise<void>;
+  set(key: string, value: string, ttl: number /* in seconds! */): Promise<void>;
   get(key: string): Promise<string | null>;
   invalidate(key: string): Promise<void>;
 }

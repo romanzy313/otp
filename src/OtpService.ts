@@ -20,7 +20,7 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
   private timeToResend: number;
   private maxAttempts: number;
   private gracePeriod: number;
-  private ttlFactor: number;
+  private storageTtl: number;
   private generateSolution: () => string;
   private _sendOtp?: SendOtpFn<SendArgs>;
 
@@ -45,7 +45,7 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
     this.timeToSolve = timeToSolve;
     this.timeToResend = timeToResend;
     this.gracePeriod = gracePeriod;
-    this.ttlFactor = ttlFactor;
+    this.storageTtl = Math.ceil((this.timeToSolve * ttlFactor) / 1000);
     this.generateSolution = generateSolution;
     this._sendOtp = sendOtp;
 
@@ -328,11 +328,7 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
   private async setSolution(token: string, value: 'S' | string): Promise<void> {
     try {
       const hash = this.hash(token);
-      await this.storage.set(
-        this.storagePrefix + hash,
-        value,
-        this.timeToSolve * this.ttlFactor
-      );
+      await this.storage.set(this.storagePrefix + hash, value, this.storageTtl);
     } catch {
       throw new OtpError('INTERNAL_ERROR', 'STORAGE_FAILURE');
     }

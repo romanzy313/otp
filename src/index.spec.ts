@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { OtpService } from './OtpService';
-import { MemoryStorage } from './storage/MemoryStorage';
+import MemoryStorage from './storage/MemoryStorage';
 import { OtpError } from './OtpError';
 import { decodeToken, encodeToken } from './utils';
 

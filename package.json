@@ -1,7 +1,7 @@
 {
   "name": "@romanzy/otp",
-  "description": "A simple and powerful way to handle various OTP scenarios",
-  "version": "0.5.9",
+  "description": "Simple and powerful way to implement your own OTP workflows",
+  "version": "0.6.0",
   "exports": {
     ".": "./dist/index.js",
     "./helpers": "./dist/helpers.js",
@@ -44,6 +44,7 @@
     "prettier": "^2.8.8",
     "rimraf": "^3.0.2",
     "typescript": "5.1.6",
+    "unstorage": "^1.9.0",
     "vite": "^4.4.9",
     "vitest": "^0.34.4"
   },
