@@ -5,7 +5,7 @@ A simple and scalable javascript library to perform OTP code authorization. Work
 ## Benefits:
 
 - Requires a single key-value pair storage server
-- Almost stateless operation, easy client/server logic
+- Almost stateless operation, straightforward client/server logic
 - Very easy to implement in server-side rendered applications
 
 ## Installation
@@ -19,7 +19,7 @@ bun install @romanzy/otp unstorage
 
 ## How to use
 
-To create a storage adapter, implement `OtpStorage` interface
+To create a storage adapter, implement the `OtpStorage` interface
 
 ```ts
 export interface OtpStorage {
@@ -29,11 +29,11 @@ export interface OtpStorage {
 }
 ```
 
-Or use `UnstorageAdapter` to support a lot of different backend key-value data stores. The full list can be found at the official documentation [here](https://unstorage.unjs.io/)
+Or use `UnstorageAdapter` to support many different backend key-value data stores. The complete list can be found in the official documentation [here](https://unstorage.unjs.io/)
 
-Examples will use `MemoryStorage` implementation, which a simple wrapper around js `Map()`
+Examples will use the `MemoryStorage` implementation, which is a simple wrapper around js `Map()`
 
-Create an instance of `OtpService` in its own module for easy referencing
+Create an instance of `OtpService`
 
 ```ts
 import { OtpService, OtpError } from '@romanzy/otp';
@@ -74,8 +74,6 @@ try {
 }
 ```
 
-Please note that **all** methods of OtpService can throw `OtpError`. These functions throw when a malicious request made by the client or when experiencing problems with storage. In the following examples try-catch error handling is omitted for brevity.
-
 Get token information `GET /otp/:token`
 
 ```ts
@@ -108,6 +106,8 @@ try {
 }
 ```
 
+Please note that **all** methods of OtpService can throw `OtpError`. These functions throw when a malicious request is made by the client or when experiencing technical problems in storage. In the following examples, try-catch error handling is omitted for brevity.
+
 Check solution, route `POST /otp/:token/check`
 
 ```ts
@@ -125,7 +125,7 @@ if (!meta.isSolved) {
   );
 }
 
-// procede to business logic
+// proceed to business logic
 const { account, customData } = data;
 ```
 
@@ -140,7 +140,7 @@ set.headers['HX-Replace-Url'] = `/otp/${token}/`;
 return <OtpForm token={token} data={data} meta={meta} error={error}></OtpForm>;
 ```
 
-All of the functions above return `OtpResult` type.
+All of the functions above return the `OtpResult` type.
 
 ```ts
 export type OtpResult<Data = unknown> = {
@@ -202,13 +202,14 @@ const { account, expiresAt, resendAt, attemptsRemaining } =
 
 ### User authentication via SMS/email codes
 
-TODO add diagrams and description of how it works
+See htmx example.
+TODO add diagrams and a description of how it works.
 
 ### Verify ownership of phone and/or email before registration
 
 TODO
 
-### Verify the user before performing priviledge actions
+### Verify the user before performing privileged actions
 
 TODO
 
@@ -228,7 +229,7 @@ The generated token string is hashed, and the solution to the OTP is stored in a
 
 This token is then sent to the client to decode and display interactive UI. Or even better, it can be server-side rendered. When the client sends a solution to the server, the server looks up the solution in the cache. If it is correct, it is marked as solved. If the solution is wrong, the server invalidates the previous hash and creates a new one, which is sent back to the client.
 
-I am looking for feedback and potential vunerabilities in this method of otp validation.
+I am looking for feedback and potential vulnerabilities in this method of OTP validation.
 
 ## Security
 
@@ -238,9 +239,9 @@ The tokens are protected from modification by indexing them in the cache by hash
 
 The `customData` field can store arbitrary JSON-encodable information inside the token, allowing the developer to ensure that solved tokens are not used for other purposes.
 
-When issuing a token with `allowReuseOfSolvedToken` enabled, solutions for solved tokens are overriden to some constant value, default is `S`. Next time `getTokenInformation` is called, it will be aware that the token is solved.
+When issuing a token with `allowReuseOfSolvedToken` enabled, values for solved tokens in storage are overridden to s constant value `S`. The next time `getTokenInformation` is called, it will know that the token is solved.
 
-This library depends on `crypto` module. All cryptographic operations are performed using this module
+This library depends on the `crypto` module. All cryptographic operations are performed using this module.
 
 ## Important notes
 
@@ -254,8 +255,7 @@ Use at least 6-digit OTP codes, allow no more than 3 attempts, and expire tokens
 
 ## TODOS
 
-- [ ] Better readme, maybe workflow diagram, explain solve and invalidation
+- [ ] Better readme, add workflow diagram
 - [ ] More helper functions
 - [ ] Client-side react example
 - [ ] TsDoc autodocumentation
-- [ ] More storage connectors out of the box, most likely an [unstorage](https://github.com/unjs/unstorage) adapter
