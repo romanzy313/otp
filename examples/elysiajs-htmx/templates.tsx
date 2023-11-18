@@ -5,12 +5,13 @@ export const OtpForm: Component<OtpResult> = ({ data, meta, error }) => {
   return (
     <form id={data.id} class="otp__form" hx-post={`solve/`} hx-swap="outerHTML">
       {/* <small>Token {token}</small> */}
-      <small>Example solution is always 1234</small>
+
       {error && <div style="color: red; padding: 1rem">{error}</div>}
 
-      <h3>Please complete otp for {data.account}</h3>
+      <h3>Enter otp code for {data.account}</h3>
       <div class="otp__input">
         <input
+          style="margin-bottom: 0"
           name="solution"
           placeholder="otp code"
           value=""
@@ -20,6 +21,9 @@ export const OtpForm: Component<OtpResult> = ({ data, meta, error }) => {
           autofocus="true"
         ></input>
       </div>
+      <small style="margin-bottom: 0.5rem">
+        Example solution is always 1234
+      </small>
       {/* dont show to not pressure the user */}
       <div>Attempts remanining {data.attemptsRemaining}</div>
       {/* in case of the event, also need to disable and clear the input */}
@@ -72,6 +76,37 @@ export const OtpPage: Component<OtpResult> = ({ token, data, meta, error }) => {
       <OtpForm token={token} data={data} meta={meta} error={error}></OtpForm>
       <script src="/public/otp-countdown.js?v=1" type="module"></script>
       <link href="/public/otp-styles.css?v=1" rel="stylesheet" />
+    </>
+  );
+};
+
+type RootLayoutProps = {
+  lang?: string;
+  dir?: string;
+  title?: string;
+  head?: JSX.Element;
+};
+
+export const RootLayout: Component<RootLayoutProps> = (props) => {
+  return (
+    <>
+      {'<!doctype html>'}
+      <html lang={props.lang || 'en'} dir={props.dir || 'ltr'}>
+        <head>
+          <title>{props.title || 'no title'}</title>
+          <script src="/node_modules/htmx.org/dist/htmx.js"></script>
+          <link
+            rel="stylesheet"
+            href="/node_modules/@picocss/pico/css/pico.css"
+          />
+          {props.head}
+        </head>
+        <body>
+          <main class="container" style="max-width: 420px">
+            {props.children}
+          </main>
+        </body>
+      </html>
     </>
   );
 };

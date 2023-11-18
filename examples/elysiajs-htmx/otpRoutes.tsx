@@ -1,7 +1,6 @@
 import Elysia, { t } from 'elysia';
 import { OtpError } from '@romanzy/otp';
-import { OtpForm, OtpPage } from './templates';
-import { RootLayout } from './templates/RootLayout';
+import { OtpForm, OtpPage, RootLayout } from './templates';
 import { otpService } from './otpService';
 
 export const otpHandler = new Elysia({

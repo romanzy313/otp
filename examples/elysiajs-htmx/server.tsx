@@ -1,9 +1,9 @@
 import { Elysia } from 'elysia';
 import { html } from '@elysiajs/html';
 import { trailingSlashPlugin } from './plugins/trailingSlashPlugin';
-import staticPlugin from '@elysiajs/static';
+import staticPlugin from './plugins/staticPlugin';
 import { otpHandler } from './otpRoutes';
-import { RootLayout } from './templates/RootLayout';
+import { RootLayout } from './templates';
 
 new Elysia()
   .use(
@@ -14,10 +14,13 @@ new Elysia()
   )
   .use(
     staticPlugin({
-      assets: 'node_modules/htmx.org/dist',
-      prefix: '/htmx',
+      assets: 'node_modules',
+      prefix: '/node_modules',
+      alwaysStatic: false,
+      ignorePatterns: [/@romanzy/],
     })
   )
+
   .use(trailingSlashPlugin)
   .use(html())
   .get('/', () => (
