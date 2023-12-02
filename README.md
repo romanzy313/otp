@@ -4,7 +4,7 @@ A simple and scalable javascript library to perform OTP operations. Works in Nod
 
 ## Benefits:
 
-- Requires a single key-value pair storage server
+- Requires only a single key-value storage
 - Almost stateless operation, straightforward client/server logic
 - Very easy to implement in server-side rendered applications
 
@@ -29,11 +29,11 @@ export interface OtpStorage {
 }
 ```
 
-Or use `UnstorageAdapter` to support many different backend key-value data stores. The complete list can be found in the official documentation [here](https://unstorage.unjs.io/)
+Or use `UnstorageAdapter` to support many different backend key-value data stores. The complete list can be found in the official documentation [here](https://unstorage.unjs.io/).
 
-Examples will use the `MemoryStorage` implementation, which is a simple wrapper around js `Map()`
+Examples will use the `MemoryStorage` implementation, which is a simple wrapper around js `Map()`.
 
-Create an instance of `OtpService`
+Create an instance of `OtpService`:
 
 ```ts
 import { OtpService, OtpError } from '@romanzy/otp';
@@ -106,7 +106,7 @@ try {
 }
 ```
 
-Please note that **all** methods of OtpService can throw `OtpError`. These functions throw when a malicious request is made by the client or when experiencing technical problems in storage. In the following examples, try-catch error handling is omitted for brevity.
+Please note that **all** methods of OtpService can throw `OtpError`. These functions throw when a malicious request is made by the client or when experiencing technical problems with storage. In the following examples, try-catch error handling is omitted for brevity.
 
 Check solution, route `POST /otp/:token/check`
 
@@ -196,7 +196,7 @@ const { account, expiresAt, resendAt, attemptsRemaining } =
   browserDecodeToken('...');
 ```
 
-## Typedoc API overview
+## Typedoc API documentation
 
 Available [here](https://romanzy313.github.io/otp/)
 
@@ -263,5 +263,4 @@ Use at least 6-digit OTP codes, allow no more than 3 attempts, and expire tokens
 
 - [ ] Better readme, add workflow diagram
 - [ ] More helper functions
-- [ ] Client-side react example
-- [ ] TsDoc autodocumentation
+- [ ] Client-side react example <!-- Since everyone uses that thing for some reason -->
