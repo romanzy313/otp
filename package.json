@@ -12,7 +12,6 @@
     "src"
   ],
   "engines": {
-    "node": "18",
     "pnpm": "8"
   },
   "scripts": {
