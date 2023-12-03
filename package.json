@@ -11,9 +11,6 @@
     "dist",
     "src"
   ],
-  "engines": {
-    "pnpm": "8"
-  },
   "scripts": {
     "dev": "vitest",
     "build": "pnpm build:tsc",
