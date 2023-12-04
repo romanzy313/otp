@@ -1,5 +1,11 @@
-import { OtpError } from './OtpError';
-import { OtpData, OtpMeta } from './types';
+import { OtpData, OtpMeta } from '../types';
+
+export {
+  decodeBase64,
+  decodeBase64Url,
+  encodeBase64,
+  encodeBase64Url,
+} from './encode';
 
 /**
  * @internal

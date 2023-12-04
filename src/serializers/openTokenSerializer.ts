@@ -1,5 +1,9 @@
+import { decodeBase64Url, encodeBase64Url } from '../utils';
 import { OtpError } from '../OtpError';
 import { OtpData, TokenSerializer } from '../types';
+
+const utf8Decoder = new TextDecoder();
+const utf8Encoder = new TextEncoder();
 
 const openTokenSerializer: TokenSerializer = {
   stringify<Data = unknown>(data: OtpData<Data>): string {
@@ -13,13 +17,13 @@ const openTokenSerializer: TokenSerializer = {
     ];
     if (data.customData) values.push(data.customData);
 
-    return Buffer.from(JSON.stringify(values)).toString('base64url');
+    return encodeBase64Url(utf8Encoder.encode(JSON.stringify(values)));
   },
   parse<Data = unknown>(token: string): OtpData<Data> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let parts: any[] = [];
     try {
-      parts = JSON.parse(Buffer.from(token, 'base64url').toString('utf8'));
+      parts = JSON.parse(utf8Decoder.decode(decodeBase64Url(token)));
     } catch {
       throw new OtpError('BAD_REQUEST', 'BAD_TOKEN');
     }
