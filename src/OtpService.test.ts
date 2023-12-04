@@ -31,6 +31,10 @@ beforeEach(() => {
 });
 
 describe('core', () => {
+  test('initialization', async () => {
+    // test many different options
+  });
+
   test('happy path', async () => {
     const issue = await service.issue(
       'user@email.com',

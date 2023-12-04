@@ -75,12 +75,12 @@ export type OtpConfig<SendArgs> = {
    * What algorithm is used when determining the storage key.
    * Can be left null to use entire token as storage key, not recommended.
    *
-   * No need for fancy hashing algorythms, it only needs to withstand collisions.
+   * No need for fancy hashing algorithms, it only needs to withstand collisions.
    * I think md5 would work well too? sha256 seems like overkill
    *
    * @default "sha256"
    */
-  hashingAlgorithm?: string | null; // default sha256
+  hashingAlgorithm?: string | null | ((input: string) => string); // default sha256
 
   /**
    * How many random bytes are used to generate a unique id for new tokens.

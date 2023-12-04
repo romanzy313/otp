@@ -4,7 +4,7 @@ import { OtpData, OtpMeta } from './types';
 /**
  * @internal
  */
-export function encodeToken<Data = unknown>(data: OtpData<Data>) {
+export function encodeToken<Data = unknown>(data: OtpData<Data>): string {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const values: any[] = [
     data.id,

@@ -39,7 +39,7 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
   }: OtpConfig<SendArgs>) {
     if (ttlFactor < 1) throw new Error('ttl factor cannot be less then 1');
 
-    if (hashingAlgorithm) {
+    if (hashingAlgorithm && typeof hashingAlgorithm === 'string') {
       const listOfSupportedHashes = crypto.getHashes();
       if (!listOfSupportedHashes.includes(hashingAlgorithm)) {
         throw new Error(
@@ -64,7 +64,9 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
 
     // TODO make this async? to not block the main thread?
     this.hash =
-      hashingAlgorithm === null
+      typeof hashingAlgorithm === 'function'
+        ? hashingAlgorithm
+        : hashingAlgorithm === null
         ? (v) => v
         : (value) =>
             crypto.createHash(hashingAlgorithm).update(value).digest('hex');
