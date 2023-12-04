@@ -1,6 +1,7 @@
 import { browserDecodeToken, numericalSolutionGenerator } from './helpers';
 import { describe, expect, test } from 'vitest';
-import { decodeToken, encodeToken } from './utils';
+
+import openTokenSerializer from './serializers/openTokenSerializer';
 
 describe('helpers', () => {
   test('numerical code generator', () => {
@@ -10,7 +11,7 @@ describe('helpers', () => {
     expect(code8.length).toBe(8);
   });
 
-  test('token decoding', async () => {
+  test('open token serialization', async () => {
     const data = {
       id: 'abcd',
       account: '123',
@@ -19,8 +20,8 @@ describe('helpers', () => {
       expiresAt: 1000,
       customData: undefined,
     };
-    const token = encodeToken(data);
-    const serverDecoded = decodeToken(token);
+    const token = openTokenSerializer.stringify(data);
+    const serverDecoded = openTokenSerializer.parse(token);
     const browserDecoded = browserDecodeToken(token);
 
     expect(serverDecoded).toStrictEqual(data);

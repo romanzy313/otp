@@ -2,8 +2,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { OtpService } from './OtpService';
 import MemoryStorage from './storage/MemoryStorage';
 import { OtpError } from './OtpError';
-import { decodeToken, encodeToken } from './utils';
-
+import openTokenSerializer from './serializers/openTokenSerializer';
 // TODO use fake timers to test expires at and resend at
 
 const memStore = new MemoryStorage();
@@ -126,10 +125,10 @@ describe('core', () => {
     expect.assertions(1);
 
     const issue = await service.issue('user@email.com', {});
-    const decoded = decodeToken(issue.token);
+    const decoded = openTokenSerializer.parse(issue.token);
     decoded.account = 'haxxed@email.com';
 
-    const encoded = encodeToken(decoded);
+    const encoded = openTokenSerializer.stringify(decoded);
     expect(service.check(encoded, '1234')).rejects.toEqual(
       new OtpError('BAD_REQUEST', 'BAD_TOKEN')
     );
@@ -138,11 +137,11 @@ describe('core', () => {
     expect.assertions(1);
 
     const issue = await service.issue('user@email.com', {});
-    const decoded = decodeToken(issue.token);
+    const decoded = openTokenSerializer.parse(issue.token);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     decoded.attemptsRemaining = 'surprice' as any;
 
-    const encoded = encodeToken(decoded);
+    const encoded = openTokenSerializer.stringify(decoded);
 
     expect(service.check(encoded, '1234')).rejects.toEqual(
       new OtpError('BAD_REQUEST', 'BAD_TOKEN')

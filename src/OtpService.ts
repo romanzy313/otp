@@ -7,9 +7,11 @@ import type {
   SendOtpFn,
   OtpResult,
   OtpConfig,
+  TokenSerializer,
 } from './types';
 import { OtpError } from './OtpError';
-import { decodeToken, computeMeta, safeCompare, encodeToken } from './utils';
+import { computeMeta, safeCompare } from './utils';
+import openTokenSerializer from './serializers/openTokenSerializer';
 
 export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
   private storage: OtpStorage;
@@ -22,6 +24,7 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
   private gracePeriod: number;
   private storageTtl: number;
   private generateSolution: () => string;
+  private tokenSerializer: TokenSerializer;
   private _sendOtp?: SendOtpFn<SendArgs>;
 
   constructor({
@@ -36,6 +39,7 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
     ttlFactor = 4,
     hashingAlgorithm = 'sha256',
     idEntropy = 32,
+    tokenSerializer = openTokenSerializer,
   }: OtpConfig<SendArgs>) {
     if (ttlFactor < 1) throw new Error('ttl factor cannot be less then 1');
 
@@ -70,6 +74,8 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
         ? (v) => v
         : (value) =>
             crypto.createHash(hashingAlgorithm).update(value).digest('hex');
+
+    this.tokenSerializer = tokenSerializer;
   }
 
   private calculateResendableAt(expiresAt: number) {
@@ -86,7 +92,7 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
     token: string
   ): Promise<OtpResult<Data>> {
     // this function can be moved in
-    const data = decodeToken<Data>(token);
+    const data = this.tokenSerializer.parse<Data>(token);
 
     const solution = await this.getSolution(token);
     const isSolved = solution === 'S';
@@ -135,7 +141,7 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
       allowReuseOfSolvedToken?: boolean;
     }
   ): Promise<OtpResult<Data>> {
-    const data = decodeToken<Data>(token);
+    const data = this.tokenSerializer.parse<Data>(token);
 
     if (data.attemptsRemaining == 0) {
       // no attempts remaining, only possible when the token was not solved
@@ -177,7 +183,7 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
       // decrease the amount of attemts
       data.attemptsRemaining--;
 
-      const newToken = encodeToken(data);
+      const newToken = this.tokenSerializer.stringify(data);
 
       // invalidate old token first
       await this.invalidateToken(token);
@@ -239,7 +245,7 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
       customData: customData as Data,
     };
 
-    const token = encodeToken(data);
+    const token = this.tokenSerializer.stringify(data);
 
     await this.sendOtp(account, solution, sendArgs);
     await this.setSolution(token, solution);

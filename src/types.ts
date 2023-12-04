@@ -89,7 +89,18 @@ export type OtpConfig<SendArgs> = {
    *
    * @default 32
    */
-  idEntropy?: number; // default 32,
+  idEntropy?: number;
+
+  /**
+   * define custom serializers/deserializers.
+   * By default entire value of the token will be visible to the client.
+   * Useful when client side rendering. Other built in options are:
+   *  - openTokenEncryptedDataSerializer: only customData of the token is encrypted, the rest is readable to the client. Recommended method.
+   *  - encryptedTokenSerializer: entire token is serialized, SSR only. Technically does not provide extra security compared to openTokenEncryptedDataSerializer
+   *
+   * @default openTokenSerializer
+   */
+  tokenSerializer?: TokenSerializer;
 };
 
 export interface OtpStorage {
@@ -162,5 +173,10 @@ export type OtpSolveError =
   | 'NO_ATTEMPTS_REMAINING'
   | 'EXPIRED'
   | 'BAD_SOLUTION';
+
+export type TokenSerializer = {
+  stringify<Data = unknown>(data: OtpData<Data>): string;
+  parse<Data = unknown>(token: string): OtpData<Data>;
+};
 
 type Pretty<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
