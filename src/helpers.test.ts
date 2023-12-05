@@ -1,4 +1,4 @@
-import { browserDecodeToken, numericalSolutionGenerator } from './helpers';
+import { numericalSolutionGenerator } from './helpers';
 import { describe, expect, test } from 'vitest';
 
 describe('helpers', () => {

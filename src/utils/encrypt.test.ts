@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { makeCustomEncryptor, makeSubtleEncryptor } from './encrypt';
-import { CipherCCMTypes, CipherGCMTypes, CipherOCBTypes } from 'crypto';
 
 describe('encryption', () => {
   it('works', () => {

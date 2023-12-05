@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // source: https://lollyrock.com/posts/nodejs-encryption/
 
-import crypto, { CipherCCMTypes, CipherGCMTypes, CipherOCBTypes } from 'crypto';
+import crypto from 'crypto';
 import { decodeBase64Url, encodeBase64Url } from './encode';
 
 export type EncryptionMethods = 'aes-128-gcm' | 'aes-192-gcm' | 'aes-256-gcm';
@@ -44,6 +44,7 @@ export const makeCustomEncryptor = (
   const { algorithm, authTagLength, ivLength, keySize } =
     scheme as EncryptionScheme;
 
+  /* v8 ignore next 5*/
   if (secret.length != keySize) {
     throw new Error(
       `Bad secret size. Must be ${keySize} but ${secret.length} was provided.`

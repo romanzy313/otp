@@ -28,19 +28,3 @@ export function computeMeta(data: OtpData, isSolved: boolean): OtpMeta {
 export function safeCompare(actual: string, provided: string) {
   return actual === provided;
 }
-
-// not used really, but could wrap all methods in this
-// for an alternative way, without try/catch
-/**
- * @internal
- */
-export async function asyncResultOrNull<R>(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  throwable: (...args: any[]) => Promise<R>
-) {
-  try {
-    return await throwable();
-  } catch (error) {
-    return null;
-  }
-}
