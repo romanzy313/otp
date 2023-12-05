@@ -37,11 +37,11 @@ Create an instance of `OtpService`:
 
 ```ts
 import { OtpService, OtpError } from '@romanzy/otp';
-import Storage from '@romanzy/otp/storage/MemoryStorage';
+import { MemoryStorage } from '@romanzy/otp/storage/MemoryStorage';
 type SendArgs = { locale: string };
 
 export const otpService = new OtpService({
-  storage: new Storage(),
+  storage: new MemoryStorage(),
   maxAttempts: 3,
   timeToResend: 60 * 1000, // units in milliseconds
   timeToSolve: 5 * 60 * 1000, // units in milliseconds
@@ -169,16 +169,16 @@ To use unstorage datapter do the following
 
 ```ts
 import { OtpService } from '@romanzy/otp';
-import Storage from '@romanzy/otp/storage/UnstorageAdapter';
+import { UnstorageAdapter } from '@romanzy/otp/storage/UnstorageAdapter';
 import redisDriver from 'unstorage/drivers/redis';
 
-const otpService = new OtpService({
-  storage: new Storage(
+export const otpService = new OtpService({
+  storage: new UnstorageAdapter(
     redisDriver({
       // driver options
     })
   ),
-  generateSolution: () => '1234',
+  ...
 });
 ```
 
@@ -211,13 +211,34 @@ export interface OtpStorage {
 
 ## Serializer usage
 
-Serializers define how token value is stringified and parsed. If unspecified, `OpenTokenSerializer` is used.
+Serializers define how token value is stringified and parsed. If unspecified, `OpenTokenSerializer` is used. There are 3 built in options for serializers:
 
-There are 3 built in options for serializers:
+- `OpenTokenSerializer`: All token data will readable by the client, including `customData`.
+- `OpenTokenEncryptedDataSerializer`: Only `customData` of the token is encrypted, all other information such as `expiry` or `account` are visible.
+- `EncryptedTokenSerializer`: Entire token is encrypted, therefore it can be used in SSR applications. Technically does not provide extra security compared to `OpenTokenEncryptedDataSerializer`. But it does provide authentication since AES block ciphers are used.
 
-- OpenTokenSerializer: All token data will readable by the client, including `customData`
-- OpenTokenEncryptedDataSerializer: Only `customData` of the token is encrypted, all other information such as `expiry` or `account` are visible.
-- EncryptedTokenSerializer: Entire token is encrypted, therefore it can be used in SSR applications. Technically does not provide extra security compared to `OpenTokenEncryptedDataSerializer`. But it does provide authentication since AES block ciphers are used.
+Make sure that the length of the secret is correct. If the secret is string, it must be 8 times smaller then encryption size (196 in this example).
+
+```ts
+import { EncryptedTokenSerializer } from '@romanzy/otp/serializer/EncryptedTokenSerializer';
+
+export const otpService = new OtpService({
+  tokenSerializer: new EncryptedTokenSerializer(
+    'supersecretencryptionkey',
+    'aes-196-gcm'
+  ),
+  ...
+});
+```
+
+Or roll your own serializer by implementing `TokenSerializer` interface.
+
+```ts
+export interface TokenSerializer {
+  stringify<Data = unknown>(data: OtpData<Data>): string;
+  parse<Data = unknown>(token: string): OtpData<Data>;
+}
+```
 
 ## Helper functions
 
@@ -231,12 +252,10 @@ import {
 const generateSolution = numericalSolutionGenerator(6);
 
 // decode token value into data of OtpResult in the browser
-// works only with default openTokenSerializer for now!
+// works only with default OpenTokenSerializer for now!
 const { account, expiresAt, resendAt, attemptsRemaining } =
   browserDecodeToken('...');
 ```
-
-## Deeper customization
 
 ## Typedoc API documentation
 
@@ -251,7 +270,8 @@ Available [here](https://romanzy313.github.io/otp/)
 ### User authentication via SMS/email codes
 
 See htmx example.
-TODO add diagrams and a description of how it works.
+
+<!-- TODO add diagrams and a description of how it works.
 
 ### Verify ownership of phone and/or email before registration
 
@@ -259,7 +279,7 @@ TODO
 
 ### Verify the user before performing privileged actions
 
-TODO
+TODO -->
 
 ## How it works
 

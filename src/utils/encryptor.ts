@@ -44,8 +44,10 @@ export function getEncryptionSchemeFromAesAlgorithmName(
   };
 }
 
+// TODO allow passing array buffers
+
 export const makeCustomEncryptor = (
-  secret: string,
+  secret: string | NodeJS.TypedArray,
   scheme: EncryptionMethods | EncryptionScheme
 ) => {
   if (typeof scheme == 'string') {
@@ -56,11 +58,21 @@ export const makeCustomEncryptor = (
   const { algorithm, authTagLength, ivLength, keySize } =
     scheme as EncryptionScheme;
 
-  /* v8 ignore next 5*/
-  if (secret.length != keySize) {
-    throw new Error(
-      `Invalid secret length. Must be ${keySize} but ${secret.length} was provided.`
-    );
+  /* v8 ignore next 15*/
+  if (typeof secret === 'string') {
+    if (secret.length != keySize) {
+      throw new Error(
+        `Invalid secret length. Must be ${keySize} but ${secret.length} was provided.`
+      );
+    }
+  } else {
+    if (secret.byteLength != keySize * 8) {
+      throw new Error(
+        `Invalid secret byte length. Must be ${keySize * 8} but ${
+          secret.byteLength
+        } was provided.`
+      );
+    }
   }
 
   return {

@@ -6,7 +6,8 @@
     ".": "./dist/index.js",
     "./helpers": "./dist/helpers.js",
     "./storage/*": "./dist/storage/*.js",
-    "./serializers/*": "./dist/serializers/*.js"
+    "./serializer": "./dist/serializer/index.js",
+    "./serializer/*": "./dist/serializer/*.js"
   },
   "files": [
     "dist",

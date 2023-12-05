@@ -11,7 +11,7 @@ import type {
 } from './types';
 import { OtpError } from './OtpError';
 import { computeMeta, safeCompare } from './utils';
-import { OpenTokenSerializer } from './serializers/OpenTokenSerializer';
+import { OpenTokenSerializer } from './serializer/OpenTokenSerializer';
 
 export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
   private storage: OtpStorage;
