@@ -63,7 +63,6 @@ export class OpenTokenEncryptedDataSerializer implements TokenSerializer {
     }
 
     if (!Array.isArray(parts) || parts.length != 5) {
-      // console.log("not array", parts);
       throw new OtpError('BAD_REQUEST', 'BAD_TOKEN');
     }
 

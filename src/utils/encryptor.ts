@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // source: https://lollyrock.com/posts/nodejs-encryption/
 
-import crypto, { CipherCCMTypes, CipherGCMTypes, CipherOCBTypes } from 'crypto';
+import crypto from 'crypto';
 import { decodeBase64Url, encodeBase64Url } from './encode';
 
-// TODO different ivs for   | 'ccm' | 'ocb'
-
+// TODO different iv length for for   | 'ccm' | 'ocb'
+// and research what are different parts of it mean
 // export type EncryptionMethods = CipherGCMTypes | CipherCCMTypes
 export type EncryptionMethods = `aes-${'128' | '192' | '256'}-${'gcm'}`;
 
