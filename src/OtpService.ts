@@ -11,7 +11,7 @@ import type {
 } from './types';
 import { OtpError } from './OtpError';
 import { computeMeta, safeCompare } from './utils';
-import { openTokenSerializer } from './serializers/openTokenSerializer';
+import { OpenTokenSerializer } from './serializers/OpenTokenSerializer';
 
 export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
   private storage: OtpStorage;
@@ -39,7 +39,7 @@ export class OtpService<SendArgs extends AnySendArgs = AnySendArgs> {
     ttlFactor = 4,
     hashingAlgorithm = 'sha256',
     idEntropy = 32,
-    tokenSerializer = openTokenSerializer,
+    tokenSerializer = new OpenTokenSerializer(),
   }: OtpConfig<SendArgs>) {
     if (ttlFactor < 1) throw new Error('ttl factor cannot be less then 1');
 

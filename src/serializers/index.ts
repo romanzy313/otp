@@ -1,3 +1,3 @@
-export { encryptedTokenSerializer } from './encryptedTokenSerializer';
-export { openTokenEncryptedDataSerializer } from './openTokenEncryptedDataSerializer';
-export { openTokenSerializer } from './openTokenSerializer';
+export * from './EncryptedTokenSerializer';
+export * from './OpenTokenEncryptedDataSerializer';
+export * from './OpenTokenSerializer';

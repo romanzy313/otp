@@ -19,7 +19,7 @@
     "build:watch": "pnpm clean && tsc --watch",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest --coverage --coverage.include=src",
+    "test:coverage": "vitest --coverage.enabled --coverage.include=src",
     "test:publish": "pnpm prepublishOnly && pnpm pack",
     "prepublishOnly": "pnpm clean && pnpm prettier && pnpm lint && pnpm test && pnpm build",
     "clean": "rimraf -rf ./dist && rimraf -rf ./types && rimraf -rf ./*-*.tgz",

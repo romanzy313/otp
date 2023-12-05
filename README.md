@@ -74,7 +74,7 @@ try {
 }
 ```
 
-Get token information `GET /otp/:token`
+Get token information `GET /otp/:token/`
 
 ```ts
 try {
@@ -163,7 +163,7 @@ export type OtpResult<Data = unknown> = {
 };
 ```
 
-## How to use UnstorageAdapter
+## Storage usage
 
 ```ts
 import { OtpService } from '@romanzy/otp';
@@ -180,6 +180,37 @@ const otpService = new OtpService({
 });
 ```
 
+Custom implementation of storage can be easily created by implementing `OtpStorage` interface.
+
+```ts
+export interface OtpStorage {
+  /**
+   * Saves solution to storage
+   *
+   * @param ttl time to live, in seconds
+   * @throws when storage malfunctions
+   */
+  set(key: string, value: string, ttl: number): Promise<void>;
+  /**
+   * Returns solution from storage
+   *
+   * @returns string when value is found. Null when key does not exist.
+   * @throws when storage malfunctions
+   */
+  get(key: string): Promise<string | null>;
+  /**
+   * Invalidates solution from storage
+   *
+   * @throws when storage malfunctions
+   */
+  invalidate(key: string): Promise<void>;
+}
+```
+
+## Serializer usage
+
+There are 3 built in options for serialize
+
 ## Helper functions
 
 ```ts
@@ -192,9 +223,12 @@ import {
 const generateSolution = numericalSolutionGenerator(6);
 
 // decode token value into data of OtpResult in the browser
+// works only with default openTokenSerializer for now!
 const { account, expiresAt, resendAt, attemptsRemaining } =
   browserDecodeToken('...');
 ```
+
+## Deeper customization
 
 ## Typedoc API documentation
 

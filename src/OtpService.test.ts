@@ -2,11 +2,12 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { OtpService } from './OtpService';
 import MemoryStorage from './storage/MemoryStorage';
 import { OtpError } from './OtpError';
-import { openTokenSerializer } from './serializers/openTokenSerializer';
+import { OpenTokenSerializer } from './serializers/OpenTokenSerializer';
 // TODO use fake timers to test expires at and resend at
 
 const memStore = new MemoryStorage();
 let service: OtpService;
+const openTokenSerializer = new OpenTokenSerializer();
 
 beforeEach(() => {
   memStore.map.clear();

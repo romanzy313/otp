@@ -104,8 +104,25 @@ export type OtpConfig<SendArgs> = {
 };
 
 export interface OtpStorage {
-  set(key: string, value: string, ttl: number /* in seconds! */): Promise<void>;
+  /**
+   * Saves solution to storage
+   *
+   * @param ttl time to live, in seconds
+   * @throws when storage malfunctions
+   */
+  set(key: string, value: string, ttl: number): Promise<void>;
+  /**
+   * Returns solution from storage
+   *
+   * @returns string when value is found. Null when key does not exist.
+   * @throws when storage malfunctions
+   */
   get(key: string): Promise<string | null>;
+  /**
+   * Invalidates solution from storage
+   *
+   * @throws when storage malfunctions
+   */
   invalidate(key: string): Promise<void>;
 }
 
@@ -174,9 +191,9 @@ export type OtpSolveError =
   | 'EXPIRED'
   | 'BAD_SOLUTION';
 
-export type TokenSerializer = {
+export interface TokenSerializer {
   stringify<Data = unknown>(data: OtpData<Data>): string;
   parse<Data = unknown>(token: string): OtpData<Data>;
-};
+}
 
 type Pretty<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;

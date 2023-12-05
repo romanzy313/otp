@@ -1,13 +1,15 @@
 import { describe, expect, test } from 'vitest';
 
 import { browserDecodeToken } from '../helpers';
-import { openTokenSerializer } from './openTokenSerializer';
-import { openTokenEncryptedDataSerializer } from './openTokenEncryptedDataSerializer';
-import { encryptedTokenSerializer } from './encryptedTokenSerializer';
+import {
+  OpenTokenSerializer,
+  OpenTokenEncryptedDataSerializer,
+  EncryptedTokenSerializer,
+} from '.';
 
 describe('open token', () => {
   test('without data', async () => {
-    const serializer = openTokenSerializer;
+    const serializer = new OpenTokenSerializer();
 
     const data = {
       id: 'abcd',
@@ -25,7 +27,7 @@ describe('open token', () => {
     expect(browserDecoded).toStrictEqual(data);
   });
   test('with data', async () => {
-    const serializer = openTokenSerializer;
+    const serializer = new OpenTokenSerializer();
 
     const data = {
       id: 'abcd',
@@ -48,7 +50,7 @@ describe('open token', () => {
 
 describe('open token encrypted data', () => {
   test('without data', async () => {
-    const serializer = openTokenEncryptedDataSerializer(
+    const serializer = new OpenTokenEncryptedDataSerializer(
       '0'.repeat(16),
       'aes-128-gcm'
     );
@@ -67,7 +69,7 @@ describe('open token encrypted data', () => {
     expect(serverDecoded).toStrictEqual(data);
   });
   test('open token with data', async () => {
-    const serializer = openTokenEncryptedDataSerializer(
+    const serializer = new OpenTokenEncryptedDataSerializer(
       '0'.repeat(16),
       'aes-128-gcm'
     );
@@ -90,7 +92,10 @@ describe('open token encrypted data', () => {
 
 describe('encrypted serializer', () => {
   test('without data', async () => {
-    const serializer = encryptedTokenSerializer('0'.repeat(16), 'aes-128-gcm');
+    const serializer = new EncryptedTokenSerializer(
+      '0'.repeat(16),
+      'aes-128-gcm'
+    );
 
     const data = {
       id: 'abcd',
@@ -105,8 +110,8 @@ describe('encrypted serializer', () => {
 
     expect(serverDecoded).toStrictEqual(data);
   });
-  test('open token with data', async () => {
-    const serializer = openTokenEncryptedDataSerializer(
+  test('with data', async () => {
+    const serializer = new EncryptedTokenSerializer(
       '0'.repeat(16),
       'aes-128-gcm'
     );

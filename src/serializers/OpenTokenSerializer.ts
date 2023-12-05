@@ -5,7 +5,7 @@ import { OtpData, TokenSerializer } from '../types';
 const utf8Decoder = new TextDecoder();
 const utf8Encoder = new TextEncoder();
 
-export const openTokenSerializer: TokenSerializer = {
+export class OpenTokenSerializer implements TokenSerializer {
   stringify<Data = unknown>(data: OtpData<Data>): string {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const values: any[] = [
@@ -18,7 +18,7 @@ export const openTokenSerializer: TokenSerializer = {
     if (data.customData) values.push(data.customData);
 
     return encodeBase64Url(utf8Encoder.encode(JSON.stringify(values)));
-  },
+  }
   parse<Data = unknown>(token: string): OtpData<Data> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let parts: any[] = [];
@@ -53,5 +53,5 @@ export const openTokenSerializer: TokenSerializer = {
       resendAt,
       customData,
     };
-  },
-};
+  }
+}
