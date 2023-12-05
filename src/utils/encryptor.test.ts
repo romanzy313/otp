@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { makeCustomEncryptor, makeSubtleEncryptor } from './encrypt';
+import { makeCustomEncryptor, makeSubtleEncryptor } from './encryptor';
+import { encodeBase64Url } from './encode';
 
 describe('encryption', () => {
   it('works', () => {

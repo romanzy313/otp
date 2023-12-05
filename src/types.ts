@@ -92,13 +92,13 @@ export type OtpConfig<SendArgs> = {
   idEntropy?: number;
 
   /**
-   * define custom serializers/deserializers.
-   * By default entire value of the token will be visible to the client.
+   * Define custom token encoders/decoders.
+   * By default OpenTokenSerializer is used. All token data will readable by the client.
    * Useful when client side rendering. Other built in options are:
-   *  - openTokenEncryptedDataSerializer: only customData of the token is encrypted, the rest is readable to the client. Recommended method.
-   *  - encryptedTokenSerializer: entire token is serialized, SSR only. Technically does not provide extra security compared to openTokenEncryptedDataSerializer
+   *  - OpenTokenEncryptedDataSerializer: only customData of the token is encrypted, the rest is readable to the client.
+   *  - EncryptedTokenSerializer: entire token is encrypted therefore can be used in SSR only.
    *
-   * @default openTokenSerializer
+   * @default OpenTokenSerializer
    */
   tokenSerializer?: TokenSerializer;
 };

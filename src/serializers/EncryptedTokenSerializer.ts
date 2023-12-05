@@ -4,7 +4,7 @@ import {
   EncryptionMethods,
   EncryptionScheme,
   makeCustomEncryptor,
-} from '../utils/encrypt';
+} from '../utils/encryptor';
 
 export class EncryptedTokenSerializer implements TokenSerializer {
   private encryptor: ReturnType<typeof makeCustomEncryptor>;

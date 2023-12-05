@@ -20,7 +20,6 @@ new Elysia()
       ignorePatterns: [/@romanzy/],
     })
   )
-
   .use(trailingSlashPlugin)
   .use(html())
   .get('/', () => (

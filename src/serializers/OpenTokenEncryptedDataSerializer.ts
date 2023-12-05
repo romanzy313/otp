@@ -5,7 +5,7 @@ import {
   EncryptionMethods,
   EncryptionScheme,
   makeCustomEncryptor,
-} from '../utils/encrypt';
+} from '../utils/encryptor';
 
 const utf8Decoder = new TextDecoder();
 const utf8Encoder = new TextEncoder();

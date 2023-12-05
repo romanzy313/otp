@@ -1,45 +1,57 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // source: https://lollyrock.com/posts/nodejs-encryption/
 
-import crypto from 'crypto';
+import crypto, { CipherCCMTypes, CipherGCMTypes, CipherOCBTypes } from 'crypto';
 import { decodeBase64Url, encodeBase64Url } from './encode';
 
-export type EncryptionMethods = 'aes-128-gcm' | 'aes-192-gcm' | 'aes-256-gcm';
+// TODO different ivs for   | 'ccm' | 'ocb'
+
+// export type EncryptionMethods = CipherGCMTypes | CipherCCMTypes
+export type EncryptionMethods = `aes-${'128' | '192' | '256'}-${'gcm'}`;
 
 export type EncryptionScheme = {
   algorithm: string;
   ivLength: number;
-  authTagLength: number;
+  authTagLength: number | null;
   keySize: number;
 };
 
-const encryptionSchemes: Readonly<Record<EncryptionMethods, EncryptionScheme>> =
-  {
-    'aes-128-gcm': {
-      algorithm: 'aes-128-gcm',
-      authTagLength: 16,
-      ivLength: 16,
-      keySize: 16,
-    },
-    'aes-192-gcm': {
-      algorithm: 'aes-192-gcm',
-      authTagLength: 16,
-      ivLength: 16,
-      keySize: 24,
-    },
-    'aes-256-gcm': {
-      algorithm: 'aes-256-gcm',
-      authTagLength: 16,
-      ivLength: 16,
-      keySize: 32,
-    },
+export function getEncryptionSchemeFromAesAlgorithmName(
+  algorithm: string,
+  authTagLength: number | null
+): EncryptionScheme {
+  const [variant, size, block] = algorithm.split('-');
+  if (variant !== 'aes')
+    throw new Error(`Unknown encryption cipher ${algorithm}`);
+
+  if (size !== '128' && size !== '192' && size !== '256') {
+    throw new Error(
+      `Bad size encryption size ${size}. Expected 128, 192, or 256`
+    );
+  }
+
+  const keySize = parseInt(size) / 8;
+
+  if (!authTagLength && (block == 'gcm' || block == 'ccm')) {
+    // force when required!
+    authTagLength = 16;
+  }
+  return {
+    algorithm,
+    ivLength: 16,
+    keySize,
+    authTagLength,
   };
+}
 
 export const makeCustomEncryptor = (
   secret: string,
   scheme: EncryptionMethods | EncryptionScheme
 ) => {
-  if (typeof scheme == 'string') scheme = encryptionSchemes[scheme];
+  if (typeof scheme == 'string') {
+    // generate it dynamically
+    scheme = getEncryptionSchemeFromAesAlgorithmName(scheme, null);
+  }
 
   const { algorithm, authTagLength, ivLength, keySize } =
     scheme as EncryptionScheme;
@@ -47,7 +59,7 @@ export const makeCustomEncryptor = (
   /* v8 ignore next 5*/
   if (secret.length != keySize) {
     throw new Error(
-      `Bad secret size. Must be ${keySize} but ${secret.length} was provided.`
+      `Invalid secret length. Must be ${keySize} but ${secret.length} was provided.`
     );
   }
 
@@ -55,32 +67,42 @@ export const makeCustomEncryptor = (
     encrypt(value: string): [string, string, string] {
       const iv = crypto.randomBytes(ivLength); // output must be 16 length
       const cipher = crypto.createCipheriv(
-        algorithm as EncryptionMethods, // pretend this for authTagLength
+        algorithm as any, // pretend this for authTagLength
         secret,
         iv,
-        {
-          authTagLength,
-        }
+        authTagLength
+          ? {
+              authTagLength,
+            }
+          : undefined
       );
 
       let encrypted = cipher.update(value, 'utf8', 'base64url');
       encrypted += cipher.final('base64url');
-      const tag = cipher.getAuthTag();
 
-      return [iv.toString('base64url'), tag.toString('base64url'), encrypted];
+      // for empty tag encode literally anything, here is a tuf-8 space
+      const tag = authTagLength
+        ? cipher.getAuthTag().toString('base64url')
+        : '';
+
+      return [iv.toString('base64url'), tag, encrypted];
     },
     decrypt(iv: string, authTag: string, encryptedText: string): string {
       // Function to decrypt data
       const decipher = crypto.createDecipheriv(
-        algorithm as EncryptionMethods,
+        algorithm as any,
         secret,
         decodeBase64Url(iv),
-        {
-          authTagLength,
-        }
+        authTagLength
+          ? {
+              authTagLength,
+            }
+          : undefined
       );
-      const decodedTag = decodeBase64Url(authTag);
-      decipher.setAuthTag(decodedTag);
+      // a space!
+      if (authTag) {
+        decipher.setAuthTag(decodeBase64Url(authTag));
+      }
       let decrypted = decipher.update(encryptedText, 'base64url', 'utf8');
       decrypted += decipher.final('utf8');
       return decrypted;
@@ -89,7 +111,7 @@ export const makeCustomEncryptor = (
 };
 
 // this could also be used, but its async... maybe its better
-// yet secrets are short
+// secrets are short, so sync implementation is okay?
 export const makeSubtleEncryptor = async (secret: string) => {
   const utf8Encoder = new TextEncoder();
   const utf8Decoder = new TextDecoder();

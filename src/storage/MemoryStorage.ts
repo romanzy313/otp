@@ -3,8 +3,13 @@ import { OtpStorage } from '../types';
 /**
  * Simple implementation of storage
  */
-export default class MemoryStorage implements OtpStorage {
-  public map = new Map();
+export class MemoryStorage implements OtpStorage {
+  public map: Map<string, string>;
+
+  constructor(initalValue?: Record<string, string>) {
+    this.map = new Map(Object.entries(initalValue || {}));
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async set(key: string, value: string, ttl: number): Promise<void> {
     this.map.set(key, value);

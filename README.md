@@ -165,6 +165,8 @@ export type OtpResult<Data = unknown> = {
 
 ## Storage usage
 
+To use unstorage datapter do the following
+
 ```ts
 import { OtpService } from '@romanzy/otp';
 import Storage from '@romanzy/otp/storage/UnstorageAdapter';
@@ -209,7 +211,13 @@ export interface OtpStorage {
 
 ## Serializer usage
 
-There are 3 built in options for serialize
+Serializers define how token value is stringified and parsed. If unspecified, `OpenTokenSerializer` is used.
+
+There are 3 built in options for serializers:
+
+- OpenTokenSerializer: All token data will readable by the client, including `customData`
+- OpenTokenEncryptedDataSerializer: Only `customData` of the token is encrypted, all other information such as `expiry` or `account` are visible.
+- EncryptedTokenSerializer: Entire token is encrypted, therefore it can be used in SSR applications. Technically does not provide extra security compared to `OpenTokenEncryptedDataSerializer`. But it does provide authentication since AES block ciphers are used.
 
 ## Helper functions
 

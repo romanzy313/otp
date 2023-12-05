@@ -1,7 +1,7 @@
 import { OtpStorage } from '../types';
 import type { Driver } from 'unstorage';
 
-export default class UnstorageAdapter implements OtpStorage {
+export class UnstorageAdapter implements OtpStorage {
   constructor(private driver: Driver) {
     if (!driver.setItem)
       throw new Error(

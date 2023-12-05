@@ -25,7 +25,7 @@ export const otpHandler = new Elysia({
         <div>Auth status: {cookie.auth.value || 'not logged in'}</div>
 
         <h3>Start otp</h3>
-        <form hx-post="issue/" hx-boost>
+        <form hx-post="issue" hx-boost>
           <input name="account" placeholder="enter account"></input>
           <button type="submit">Start</button>
         </form>
@@ -34,7 +34,7 @@ export const otpHandler = new Elysia({
   })
 
   .post(
-    '/issue/',
+    '/issue',
     async ({ body, set }) => {
       // validate its an email or phone
       const account = body.account.toLowerCase();
@@ -92,7 +92,7 @@ export const otpHandler = new Elysia({
     }
   )
   .post(
-    '/:token/solve/',
+    '/:token/solve',
     async ({ body, params, set, cookie }) => {
       const { token, data, meta, error } = await otpService.check(
         params.token,
@@ -132,7 +132,7 @@ export const otpHandler = new Elysia({
     }
   )
   .post(
-    '/:token/resend/',
+    '/:token/resend',
     async ({ params, set }) => {
       // need to parse out the username from the token
 

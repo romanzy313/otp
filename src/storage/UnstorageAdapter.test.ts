@@ -3,8 +3,9 @@ import { OtpService } from '../OtpService';
 import { OtpError } from '../OtpError';
 
 import memoryDriver from 'unstorage/drivers/memory';
-import Storage from './UnstorageAdapter';
+import { UnstorageAdapter } from './UnstorageAdapter';
 import { Driver } from 'unstorage';
+import { MemoryStorage } from './MemoryStorage';
 
 let driver: Driver;
 let service: OtpService;
@@ -12,7 +13,7 @@ let service: OtpService;
 beforeEach(() => {
   driver = memoryDriver();
   service = new OtpService({
-    storage: new Storage(driver),
+    storage: new UnstorageAdapter(driver),
     generateSolution: () => '1234',
     storagePrefix: 'otp:',
   });

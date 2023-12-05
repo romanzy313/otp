@@ -1,11 +1,12 @@
 import { OtpService } from '@romanzy/otp';
 // import Storage from '@romanzy/otp/storage/MemoryStorage';
-import Storage from '@romanzy/otp/storage/UnstorageAdapter';
+import { UnstorageAdapter } from '@romanzy/otp/storage/UnstorageAdapter';
 // import { numericalSolutionGenerator } from '@romanzy/otp/helpers';
 import memoryDriver from 'unstorage/drivers/memory';
+import { EncryptedTokenSerializer } from '../../dist/serializers';
 
 export const otpService = new OtpService({
-  storage: new Storage(memoryDriver()),
+  storage: new UnstorageAdapter(memoryDriver()),
   maxAttempts: 2,
   timeToResend: 10 * 1000,
   timeToSolve: 60 * 1000,
@@ -22,4 +23,8 @@ export const otpService = new OtpService({
       args.locale
     );
   },
+  tokenSerializer: new EncryptedTokenSerializer(
+    '0'.repeat(32),
+    'aes-256-cbc' as any
+  ),
 });
