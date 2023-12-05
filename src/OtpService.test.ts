@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { OtpService } from './OtpService';
 import MemoryStorage from './storage/MemoryStorage';
 import { OtpError } from './OtpError';
-import openTokenSerializer from './serializers/openTokenSerializer';
+import { openTokenSerializer } from './serializers/openTokenSerializer';
 // TODO use fake timers to test expires at and resend at
 
 const memStore = new MemoryStorage();

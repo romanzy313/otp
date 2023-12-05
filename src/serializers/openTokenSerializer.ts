@@ -5,7 +5,7 @@ import { OtpData, TokenSerializer } from '../types';
 const utf8Decoder = new TextDecoder();
 const utf8Encoder = new TextEncoder();
 
-const openTokenSerializer: TokenSerializer = {
+export const openTokenSerializer: TokenSerializer = {
   stringify<Data = unknown>(data: OtpData<Data>): string {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const values: any[] = [
@@ -38,10 +38,12 @@ const openTokenSerializer: TokenSerializer = {
     const attemptsRemaining = parseInt(parts[2]);
     const expiresAt = parseInt(parts[3]);
     const resendAt = parseInt(parts[4]);
-    const customData = parts[5];
+    const customData = parts.length == 6 ? parts[5] : undefined;
 
     if (isNaN(attemptsRemaining) || isNaN(resendAt) || isNaN(expiresAt))
       throw new OtpError('BAD_REQUEST', 'BAD_TOKEN');
+
+    // make sure undefined is return if data was not defined
 
     return {
       id,
@@ -53,5 +55,3 @@ const openTokenSerializer: TokenSerializer = {
     };
   },
 };
-
-export default openTokenSerializer;
