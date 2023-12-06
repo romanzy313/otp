@@ -1,7 +1,7 @@
 {
   "name": "@romanzy/otp",
   "description": "Simple and powerful way to implement your own OTP workflows",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "exports": {
     ".": "./dist/index.js",
     "./helpers": "./dist/helpers.js",
@@ -25,7 +25,7 @@
     "test:publish": "pnpm prepublishOnly && pnpm pack",
     "prepublishOnly": "pnpm clean && pnpm prettier && pnpm lint && pnpm test && pnpm build",
     "clean": "rimraf -rf ./dist && rimraf -rf ./types && rimraf -rf ./*-*.tgz",
-    "format": "pnpm clean && pnpm prettier && pnpm lint",
+    "format": "pnpm prettier && pnpm lint",
     "lint": "eslint . --ext .ts --fix",
     "lint:dry": "eslint . --ext .ts",
     "prettier": "prettier --config .prettierrc 'src/**/*.ts' --write",

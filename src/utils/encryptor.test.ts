@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { makeCustomEncryptor, makeSubtleEncryptor } from './encryptor';
-import crypto from 'crypto';
 describe('encryption', () => {
   it('works', () => {
     const e = makeCustomEncryptor('0'.repeat(32), 'aes-256-gcm');

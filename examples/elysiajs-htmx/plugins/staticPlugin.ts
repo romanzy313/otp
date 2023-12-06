@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NotFoundError, Elysia } from 'elysia';
 
 import { readdir, stat } from 'fs/promises';
@@ -151,7 +153,9 @@ export const staticPlugin = async <Prefix extends string = '/prefix'>(
       )
     )
       app
-        .onError(() => {})
+        .onError(() => {
+          //
+        })
         .get(`${prefix}/*`, async ({ params }) => {
           const file = `${assets}/${(params as any)['*']}`;
 

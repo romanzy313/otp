@@ -28,26 +28,3 @@ export class UnstorageAdapter implements OtpStorage {
     await this.driver.removeItem!(key, {});
   }
 }
-
-// old impl below:
-
-// import type { Storage } from 'unstorage';
-// export class UnstorageConnector implements OtpStorage {
-//   constructor(private Storage: Storage) {
-//     // if (!driver.setItem)
-//     //     throw new Error(`Driver ${driver.name} does not su`);
-//   }
-//   set(key: string, value: string, ttl: number): Promise<void> {
-//     return this.Storage.setItem(key, value, {
-//       ttl,
-//     });
-//   }
-//   get(key: string): Promise<string | null> {
-//     return this.Storage.getItem(key).then((val) =>
-//       val === null ? null : val.toString()
-//     );
-//   }
-//   invalidate(key: string): Promise<void> {
-//     return this.Storage.removeItem(key);
-//   }
-// }

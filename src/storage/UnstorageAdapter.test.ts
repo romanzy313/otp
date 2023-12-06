@@ -5,7 +5,6 @@ import { OtpError } from '../OtpError';
 import memoryDriver from 'unstorage/drivers/memory';
 import { UnstorageAdapter } from './UnstorageAdapter';
 import { Driver } from 'unstorage';
-import { MemoryStorage } from './MemoryStorage';
 
 let driver: Driver;
 let service: OtpService;
